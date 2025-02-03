@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <artifactId>pom-scijava</artifactId>
+    <groupId>org.scijava</groupId>
+    <version>40.0.0</version>
+    <relativePath>pom.xml</relativePath>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.stjude.lightmicroscopy</groupId>
+  <artifactId>swingui_2</artifactId>
+  <name>FIJI GUI_test</name>
+  <version>0.2.0</version>
+  <description>A Maven project implementing an ImageJ 1.x plugin.</description>
+  <url>None</url>
+  <issueManagement>
+    <system>GitHub Issues</system>
+    <url>https://github.com/imagej/example-legacy-plugin/issues</url>
+  </issueManagement>
+  <ciManagement>
+    <system>None</system>
+  </ciManagement>
+  <inceptionYear>2025</inceptionYear>
+  <mailingLists>
+    <mailingList>
+      <name>None</name>
+    </mailingList>
+  </mailingLists>
+  <developers>
+    <developer>
+      <id>AaronT</id>
+      <name>Aaron Taylor</name>
+      <url>None</url>
+      <roles>
+        <role>founder</role>
+        <role>lead</role>
+        <role>developer</role>
+        <role>debugger</role>
+        <role>reviewer</role>
+        <role>support</role>
+        <role>maintainer</role>
+      </roles>
+    </developer>
+  </developers>
+  <contributors>
+    <contributor>
+      <name>Chen Li</name>
+    </contributor>
+  </contributors>
+  <licenses>
+    <license>
+      <name>CC0</name>
+      <url>https://creativecommons.org/publicdomain/zero/1.0/</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <scm>
+    <connection>scm:git:https://github.com/imagej/example-legacy-plugin</connection>
+    <developerConnection>scm:git:git@github.com:imagej/example-legacy-plugin</developerConnection>
+    <url>https://github.com/imagej/example-legacy-plugin</url>
+  </scm>
+  <organization>
+    <name>stjude children research hospital</name>
+    <url>https://www.stjude.org/</url>
+  </organization>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.3.0</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  <repositories>
+    <repository>
+      <id>scijava.public</id>
+      <url>https://maven.scijava.org/content/groups/public</url>
+    </repository>
+  </repositories>
+  <properties>
+    <package-name>org.stjude.swingui.boot</package-name>
+    <license.licenseName>cc0</license.licenseName>
+    <main-class>org.stjude.swingui.boot.FijiGui</main-class>
+    <license.copyrightOwners>My Company, Inc.</license.copyrightOwners>
+  </properties>
+</project>

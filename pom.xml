@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+		http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.scijava</groupId>
+		<artifactId>pom-scijava</artifactId>
+		<version>40.0.0</version>
+		<relativePath />
+	</parent>
+
+	<groupId>org.stjude.lightmicroscopy</groupId>        <!-- FIXME: Your organization groupId here -->
+	<artifactId>swingui_2</artifactId> <!-- FIXME: Your project artifactId here   -->
+	<version>0.2.0</version>
+
+	<repositories>
+		<repository>
+			<id>scijava.public</id>
+			<url>https://maven.scijava.org/content/groups/public</url>
+		</repository>
+
+	</repositories>
+<!-- sudo keytool -importcert -keystore "/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/lib/security/cacerts" -storepass changeit -file /Users/cli74/Downloads/repo.maven.apache.org.der -alias centralmaven -->
+ 
+	<name>FIJI GUI_test</name>                                                   <!-- FIXME: Your project name here          -->
+	<description>A Maven project implementing an ImageJ 1.x plugin.</description> <!-- FIXME: Your project description here   -->
+	<url>None</url>                       <!-- FIXME: Your project website here       -->
+	<inceptionYear>2025</inceptionYear>                                           <!-- FIXME: Your project starting year here -->
+	<organization>
+		<name>stjude children research hospital</name>           <!-- FIXME: Your organization name here    -->
+		<url>https://www.stjude.org/</url> <!-- FIXME: Your organization website here -->
+	</organization>
+	<licenses>
+		<license>                         <!-- FIXME: Your license here -->
+			<name>CC0</name>
+			<url>https://creativecommons.org/publicdomain/zero/1.0/</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<developers>
+		<!-- See https://imagej.net/contribute/governance#scijava-team-roles -->
+		<developer>
+			<id>AaronT</id>                                          <!-- FIXME: Your GitHub handle here -->
+			<name>Aaron Taylor</name>                            <!-- FIXME: Your name here          -->
+			<url>None</url> <!-- FIXME: Your website here       -->
+			<roles>
+				<role>founder</role>
+				<role>lead</role>
+				<role>developer</role>
+				<role>debugger</role>
+				<role>reviewer</role>
+				<role>support</role>
+				<role>maintainer</role>
+			</roles>
+		</developer>
+	</developers>
+	<contributors>
+		<contributor>
+			<name>Chen Li</name>
+		</contributor>
+	</contributors>
+
+	<mailingLists>
+		<mailingList>
+			<name>None</name>
+		</mailingList>
+	</mailingLists>
+
+	<scm>
+		<connection>scm:git:https://github.com/imagej/example-legacy-plugin</connection>
+		<developerConnection>scm:git:git@github.com:imagej/example-legacy-plugin</developerConnection>
+		<tag>HEAD</tag>
+		<url>https://github.com/imagej/example-legacy-plugin</url>
+	</scm>
+	<issueManagement>
+		<system>GitHub Issues</system>
+		<url>https://github.com/imagej/example-legacy-plugin/issues</url>
+	</issueManagement>
+	<ciManagement>
+		<system>None</system>
+	</ciManagement>
+
+	<properties>
+		<package-name>org.stjude.swingui.boot</package-name>                   <!-- FIXME: Your project package prefix here -->
+		<main-class>org.stjude.swingui.boot.FijiGui</main-class>        <!-- FIXME: Your project main class here, or delete for none -->
+		<license.licenseName>cc0</license.licenseName>                      <!-- FIXME: Your license-maven-plugin license code here -->
+		<license.copyrightOwners>My Company, Inc.</license.copyrightOwners> <!-- FIXME: Your organization legal entity name here -->
+	</properties>
+
+	
+
+	<dependencies>
+
+		<dependency>
+    		<groupId>net.imagej</groupId>
+    		<artifactId>imagej</artifactId>
+    		<version>2.16.0</version>
+		</dependency>
+
+		<dependency>
+    		<groupId>net.imagej</groupId>
+    		<artifactId>ij</artifactId>
+    		<version>1.54k</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>ij1-patcher</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-legacy</artifactId>
+		</dependency>
+
+		<!-- SciJava dependencies - https://github.com/scijava -->
+		<dependency>
+			<groupId>org.scijava</groupId>
+			<artifactId>app-launcher</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.scijava</groupId>
+			<artifactId>scijava-common</artifactId>
+		</dependency>
+
+		<dependency>
+    		<groupId>sc.fiji</groupId>
+    		<artifactId>CorrectBleach_</artifactId>
+    		<version>2.0.3</version>
+		</dependency>
+
+		<dependency>
+    		<groupId>org.scijava</groupId>
+    		<artifactId>scripting-scala</artifactId>
+    		<version>0.3.2</version>
+		</dependency>
+
+		<dependency>
+    		<groupId>sc.fiji</groupId>
+    		<artifactId>fiji-lib</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>sc.fiji</groupId>
+			<artifactId>Fiji_Plugins</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>sc.fiji</groupId>
+			<artifactId>legacy-imglib1</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>net.imglib2</groupId>
+			<artifactId>imglib2</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.imglib2</groupId>
+			<artifactId>imglib2-algorithm</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.imglib2</groupId>
+			<artifactId>imglib2-ij</artifactId>
+		</dependency>
+
+		<dependency>
+    		<groupId>sc.fiji</groupId>
+    		<artifactId>Image_5D</artifactId>
+    		<version>2.0.2</version>
+		</dependency>
+
+
+	</dependencies>
+
+	
+
+</project>
+<!-- /Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home/jre/lib/security/cacerts -->
