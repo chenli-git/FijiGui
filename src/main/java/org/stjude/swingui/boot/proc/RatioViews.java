@@ -33,7 +33,8 @@ public class RatioViews implements ActionListener {
 	String ratiomethod = null; // holds ratiomethod constants
 	
 	double numval, denval, ratio; // ratio calc vars; double is MORE precise than float
-	
+	ColorDisplay cd;
+
 	// Ratiomethod constants used to call each display type
 	public static final String RAW = "RAW";
 	public static final String IMD = "IMD";
@@ -166,6 +167,10 @@ public class RatioViews implements ActionListener {
 		// Calls computational methods...
 		ImagePlus finalresult = getRatioImage(ratiomethod);
 		finalresult.show(); // END - Displays final result
+		if (ratiomethod == RAW) {
+			cd = new ColorDisplay();
+			cd.setLUT("phase");
+		}
 
     }
 
@@ -175,7 +180,10 @@ public class RatioViews implements ActionListener {
 		ImagePlus ratioimage = null;
 		
 		getChannels(); // get channels and assigns to globals
-	
+
+		// apply lut first
+		IJ.run(imp, "Apply LUT", "");
+
 		// FIX - assumes one of the constants was passed
 		if (ratiomethod == this.RAW) {
 			ratioimage = rawRatio();
@@ -519,7 +527,7 @@ public class RatioViews implements ActionListener {
 							
 				// Sets Saturation - x,y near y=x are most saturated
 						// Equation is a logistic function with maximum at y=x	
-						hsbplanestk.setVoxel(x, y, 1, 1/(1 + Math.exp(-15*(theta-0.60))) ); // 15 is the growth rate, 0.60 is the sigmoid midpoint
+						hsbplanestk.setVoxel(x, y, 1, 1/(1 + Math.exp(-15*(theta-0.80))) ); // 15 is the growth rate, 0.60 is the sigmoid midpoint
 						
 				// Sets Brightness - 'intensity modulated' according to the radius
 						if (radius < 1) {

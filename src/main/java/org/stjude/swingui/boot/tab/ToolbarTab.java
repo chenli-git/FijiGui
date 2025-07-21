@@ -3,6 +3,8 @@ package org.stjude.swingui.boot.tab;
 import org.stjude.swingui.boot.panel.ProcessPanel;
 import org.stjude.swingui.boot.panel.RecordPanel;
 import org.stjude.swingui.boot.panel.VisualizePanel;
+import org.stjude.swingui.boot.event.TfButtonListener;
+import org.stjude.swingui.boot.panel.InfoPanel;
 import org.stjude.swingui.boot.proc.Contrast;
 
 import java.awt.*;
@@ -18,32 +20,37 @@ public class ToolbarTab extends WindowAdapter {
 
 	JFrame f; 
 	VisualizePanel vizpanel;
+	ProcessPanel processPanel; // Store reference to ProcessPanel
 
     public ToolbarTab() {
-        frameWidth = 330;
+        frameWidth = 320;
         frameHeight = 435;
 		setup();
     }
 
     private void setup(){
         // Sets up the frame
-		f = new JFrame("FIJI GUI");
+		f = new JFrame("Easy Fiji");
 		f.setSize(frameWidth, frameHeight);
         f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE); // soft close opertaions handled by windowClosing() below...
 		f.addWindowListener(this); // 'this' should recieve WindowEvents from the JFrame
         
 		// Provides a hondle for the VisualizePanel, which is used in response to windowActivated events below
 		vizpanel = new VisualizePanel();
+		processPanel = new ProcessPanel(); // Store reference
 
         // Sets up the tabbed panes
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.setBounds(0,0,frameWidth,frameHeight);
         tabbedPane.add("Display", vizpanel); // Contrast class is instantiated w/in VisualizePanel
-        tabbedPane.add("Process", new ProcessPanel());
+        tabbedPane.add("Process", processPanel);
         tabbedPane.add("Save", new RecordPanel());
-		
+		tabbedPane.add("Image info", new InfoPanel());
 		// Adds the tabbed pane to the frame
         f.add(tabbedPane, BorderLayout.NORTH);
+
+		// Pass ProcessPanel to TfButtonListener
+        TfButtonListener.setProcessPanel(processPanel); // Inject existing ProcessPanel
 
 		// Finalizes layout
         //f.add(tabbedPane);
@@ -55,6 +62,7 @@ public class ToolbarTab extends WindowAdapter {
 		GUI.centerOnImageJScreen(f);
 		GUI.scale(f);
 		// Displays the frame on the screen
+		f.setAlwaysOnTop(true);
         f.setVisible(true);
 		
     }

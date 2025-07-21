@@ -4,6 +4,9 @@ package org.stjude.swingui.boot.proc;
 	 
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import java.awt.event.*;
 import java.awt.image.*;
 import ij.*;
@@ -15,7 +18,7 @@ import ij.measure.*;
 // Hack of ContrastAdjuster.java to implement RESPONSES TO Min and Max sliders, and Auto and Reset buttons, which are now rendered in FIJI GUI
 // RELIES CONSTANTLY ON IJ CLASSES, SO CAN ONLY BE INSTANTIATED AS PART OF A PLUGIN
 
-public class Contrast implements Runnable, ActionListener, AdjustmentListener {
+public class Contrast implements Runnable, ActionListener, AdjustmentListener, ChangeListener {
 
     static final int AUTO_THRESHOLD = 5000; // used in autoAdjust()
     static final int[] channelConstants = {4, 2, 1, 3, 5, 6, 7};
@@ -26,7 +29,7 @@ public class Contrast implements Runnable, ActionListener, AdjustmentListener {
 	
 	JFrame jf; // the gui window 
 	JButton autoB, resetB; // button instances - FIJI GUI uses JButton, not Button
-    Scrollbar minSlider, maxSlider;  // scrollbar instances
+    JSlider minSlider, maxSlider;  // scrollbar instances
 
 	// Scrollbar setup vars
     int minSliderValue=-1, maxSliderValue=-1;
@@ -47,7 +50,7 @@ public class Contrast implements Runnable, ActionListener, AdjustmentListener {
     int channels = 7; // RGB
 
 	// Provides initial state of gui elements
-	public Contrast(Scrollbar minSlider, Scrollbar maxSlider, JButton autoB, JButton resetB) {
+	public Contrast(JSlider minSlider, JSlider maxSlider, JButton autoB, JButton resetB) {
 		// Ensures instances of gui elements are not null once slider events are triggered.  Notice logic in listener methods.
 		this.minSlider = minSlider; 
 		this.maxSlider = maxSlider;
@@ -79,6 +82,19 @@ public class Contrast implements Runnable, ActionListener, AdjustmentListener {
         notify(); // inhereted from java Object.  'Wakes up' the thread that does processing by kicking off the run() method (below...)
     }
 
+    public synchronized void stateChanged(ChangeEvent e) {
+        Object source = e.getSource();
+        if (source == minSlider) {
+            minSliderValue = minSlider.getValue();
+        } 
+        if (source == maxSlider) {
+            maxSliderValue = maxSlider.getValue();
+            System.out.println("maxSliderValue: " + maxSliderValue); // for debugging purposes
+        }
+        notify();  // Trigger the thread to process the changes
+    }
+
+
 	public synchronized void actionPerformed(ActionEvent e) {  // button events
         JButton b = (JButton)e.getSource();
         if (b==null) return;
@@ -107,6 +123,8 @@ public class Contrast implements Runnable, ActionListener, AdjustmentListener {
                 return;
             setup(imp);
             imp.updateAndDraw();
+            int channel = imp.getChannel();
+            channels = channelConstants[channel-1];
         }
     }
 
@@ -162,8 +180,15 @@ public class Contrast implements Runnable, ActionListener, AdjustmentListener {
             newSliderRange /= 2;
         else if (newSliderRange>=1280)
             newSliderRange /= 5;
-        if (newSliderRange<256) newSliderRange = 256; // slider range ultimately becomes either 256 or 1024
+        //if (newSliderRange<256) newSliderRange = 256; // slider range ultimately becomes either 256 or 1024
+        if (newSliderRange < 256) newSliderRange = 256; 
         if (newSliderRange>1024) newSliderRange = 1024;
+
+        // if (defaultMax <= 256) {
+        //     sliderRange = 256;
+        // } else {
+        //     sliderRange = 1024; // or computed based on data range
+        // }
         double displayRange = max-min;
         if (valueRange>=1280 && valueRange!=0 && displayRange/valueRange<0.25)
             newSliderRange *= 1.6666;
@@ -180,24 +205,34 @@ public class Contrast implements Runnable, ActionListener, AdjustmentListener {
 
     void setMinAndMax(ImagePlus imp, double min, double max) {
         boolean rgb = imp.getType()==ImagePlus.COLOR_RGB;
+
         if (channels!=7 && rgb)
-            imp.setDisplayRange(min, max, channels);
+            {imp.setDisplayRange(min, max, channels);
+            }
         else
-            imp.setDisplayRange(min, max);
+            {imp.setDisplayRange(min, max);
+            }
     }
 
    
 	// Makes scrollbars also respond to each other
-    void updateScrollBars(Scrollbar sb, boolean newRange) {
+    void updateScrollBars(JSlider sb, boolean newRange) {
         if (minSlider!=null && (sb==null || sb!=minSlider)) {
             if (newRange)
-                minSlider.setValues(scaleDown(min), 1, 0,  sliderRange);
+                //minSlider.setValues(scaleDown(min), 1, 0,  sliderRange);
+                {minSlider.setMinimum(0);
+                minSlider.setMaximum(sliderRange);
+                minSlider.setValue(scaleDown(min));}
+                
             else
                 minSlider.setValue(scaleDown(min));
         }
         if (maxSlider!=null && (sb==null || sb!=maxSlider)) {
             if (newRange)
-                maxSlider.setValues(scaleDown(max), 1, 0,  sliderRange);
+                //maxSlider.setValues(scaleDown(max), 1, 0,  sliderRange);
+                {maxSlider.setMinimum(0);
+                maxSlider.setMaximum(sliderRange);
+                maxSlider.setValue(scaleDown(max));}
             else
                 maxSlider.setValue(scaleDown(max));
         }
@@ -206,7 +241,7 @@ public class Contrast implements Runnable, ActionListener, AdjustmentListener {
     int scaleDown(double v) {
         if (v<defaultMin) v = defaultMin;
         if (v>defaultMax) v = defaultMax;
-        return (int)((v-defaultMin)*(sliderRange-1.0)/(defaultMax-defaultMin));
+        return (int)Math.round((v-defaultMin)*(sliderRange-1.0)/(defaultMax-defaultMin));
     }
 
 
@@ -287,6 +322,8 @@ public class Contrast implements Runnable, ActionListener, AdjustmentListener {
     void adjustMax(ImagePlus imp, ImageProcessor ip, double maxvalue) {
         resetRGB(ip);
         max = defaultMin + maxvalue*(defaultMax-defaultMin)/(sliderRange-1.0);
+        // reverse the mapping
+        //max = defaultMin + (sliderRange - 1 - maxvalue) * (defaultMax - defaultMin) / (sliderRange - 1.0);
         //IJ.log("adjustMax: "+maxvalue+"  "+max);
         if (min<defaultMin)
             min = defaultMin;

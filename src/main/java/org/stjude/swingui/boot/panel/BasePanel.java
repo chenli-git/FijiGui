@@ -111,9 +111,10 @@ public abstract class BasePanel extends JPanel {
             throw new IllegalArgumentException("Icon file not found: icons/" + iconfilename);
         }
         ImageIcon icon = new ImageIcon(imageURL);  // Caution - no error catching on open...
-		
+		int width = icon.getIconWidth();
+        int height = icon.getIconHeight();
         //rectangle to fit icon
-		Rectangle rectangle = new Rectangle(xAxis, yAxis, 24, 24); // icon image is 24 x 24
+		Rectangle rectangle = new Rectangle(xAxis, yAxis, width, height); // icon image is 24 x 24
 		// Add Button with icon face
         JButton b = new JButton((Icon) icon);
         b.setBounds(rectangle);
@@ -145,5 +146,16 @@ public abstract class BasePanel extends JPanel {
         textField.setToolTipText(tooltip);
         panelName.add(textField);
         return textField;
+    }
+
+    protected JTextArea addTextArea(JPanel panelName, String textFieldValue, String tooltip, Rectangle rectangle, int fontSize) {
+        // Add text area
+        JTextArea textArea = new JTextArea(textFieldValue);
+        textArea.setBounds(rectangle);
+        textArea.setFont(new Font("Calibri", Font.BOLD, fontSize));
+        textArea.setEditable(false); // User input not allowed to avoid validation
+        textArea.setToolTipText(tooltip);
+        panelName.add(textArea);
+        return textArea;
     }
 }

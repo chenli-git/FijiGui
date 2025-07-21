@@ -5,10 +5,19 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 import org.stjude.swingui.boot.proc.*;
 
+import ij.ImagePlus;
+import ij.WindowManager;
+import ij.*;
+
+import org.checkerframework.checker.units.qual.s;
+import org.stjude.swingui.boot.event.ClickRecorder;
+
 public class ButtonListener implements ActionListener
 {
-    public ButtonListener() {
-    }
+	private static ModifySliders ms = null; // Use shared instance
+	private static ClickRecorder recorder = ClickRecorder.getInstance();
+
+    public ButtonListener() {}
 
     @Override
     public void actionPerformed(ActionEvent actionEvent)
@@ -16,14 +25,26 @@ public class ButtonListener implements ActionListener
         // Gets button ID
 		JButton button = (JButton) actionEvent.getSource();
 		String id = (String) button.getClientProperty("ID"); 
-
+		button.setBackground(new java.awt.Color(255, 255, 255));
 		// Declares proc classes called
 		ColorDisplay cd;
 		ChannelViews cv;
 		StackViews sv;
 		ModifyButtons mb;
 		RatioViews rv;
-		
+		// **Record the button click**
+        if (isProcessingAction(id)) {
+			System.out.println("Button clicked: " + id);
+			recorder.actionPerformed(actionEvent);
+		}
+
+		ImagePlus imp = WindowManager.getCurrentImage(); // active image
+		if (imp == null) {
+			IJ.error("Error", "No active image to process.");
+			return;
+		}
+
+
 		// Calls a response based on button ID
 		switch (id) {
 			
@@ -92,6 +113,11 @@ public class ButtonListener implements ActionListener
 				cd = new ColorDisplay();
 				cd.setLUT("phase");
 				break;
+
+			case "reset_color":
+				mb = new ModifyButtons();
+				mb.Revert();
+				break;
 				
 			case "showall":
 				cd = new ColorDisplay();
@@ -103,9 +129,24 @@ public class ButtonListener implements ActionListener
 				cd.showCh();
 				break;
 			
+			case "ColorFusion":
+				cd = new ColorDisplay();
+				cd.colorFusion();
+				break;
+			
 			case "reorder":
 				cv = new ChannelViews();
 				cv.reOrder();
+				break;
+			
+			case "resetMax":
+				cv = new ChannelViews();
+				cv.resetMax();
+				break;
+			
+			case "resetMin":
+				cv = new ChannelViews();
+				cv.resetMin();
 				break;
 
 			// Channel Contrast Display button logic is handled directly within VisualizePanel
@@ -154,6 +195,21 @@ public class ButtonListener implements ActionListener
 				cv = new ChannelViews();
 				cv.snapShot();
 				break;
+			
+			case "copy":
+				cv = new ChannelViews();
+				cv.copyToSys();
+				break;
+			
+			case "dup":
+				cv = new ChannelViews();
+				cv.duplicate();
+				break;
+			
+			case "sync":
+				cv = new ChannelViews();
+				cv.sync();
+				break;
 				
 			// logic for Stack Views buttons	
 			case "mip":
@@ -161,6 +217,11 @@ public class ButtonListener implements ActionListener
 				sv.mip();
 				break;
 				
+			case "sip":
+				sv = new StackViews();
+				sv.sip();
+				break;
+
 			case "ortho":
 				sv = new StackViews();
 				sv.ortho();
@@ -182,6 +243,18 @@ public class ButtonListener implements ActionListener
 				break;	
 				
 			// logic for Intensity Correction buttons	
+
+			// case "revert":
+			// 	mb = new ModifyButtons();
+			// 	mb.Revert();
+			// 	break;
+
+			case "undo":
+				//System.out.println("Undo button clicked.");
+				ms = ModifySliders.getInstance();
+                ms.undoLastAction();
+                break;
+
 			case "hmatch": 
 				mb = new ModifyButtons();
 				mb.histoMatch();
@@ -207,14 +280,52 @@ public class ButtonListener implements ActionListener
 				mb = new ModifyButtons();
 				mb.subset();
 				break;
-				
+			// buttons for imageinfo 
+			case "info":
+				mb = new ModifyButtons();
+				mb.info();
+				break;
+
+			case "meta":
+				mb = new ModifyButtons();
+				mb.meta();
+				break;
+
 			// logic for Load buttons	
 			case "appsteps": System.out.println(id);
 				break;
 				
 			case "batchsteps": System.out.println(id);
-				break;					
+				break;	
+
+			
+			case "save":
+				recorder.saveRecentActions();
+				break;	
+			
+			case "saveMovie":
+				cv = new ChannelViews();
+				cv.saveMovie();
+				break; // TODO: Implement saveMovie logic
+			
+			case "clear":
+				recorder.clearRecords();
+				break;
+
+			case "export":
+				//recorder.exportToJson();
+				recorder.exportToTxt();
+				break;
+
+			case "run":
+				recorder.runRecordedActions();
+				break;
 				
 		}		
     }
+
+	private boolean isProcessingAction(String action) {
+		return action.equals("hmatch") || action.equals("exponential") || action.equals("rotate") || action.equals("crop") || action.equals("subset");
+	}
+
 }

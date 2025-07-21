@@ -7,7 +7,17 @@ import ij.gui.*;
 import ij.plugin.*; 
 import ij.plugin.filter.*; 
 import ij.measure.*;
+
+import java.awt.FileDialog;
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import javax.swing.JFileChooser;
+import javax.swing.JTextArea;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+import org.stjude.swingui.boot.event.ClickRecorder;
 
 public class SaveButtons {
 
@@ -29,20 +39,74 @@ public class ModifySliders_ implements PlugIn {
 	}
 	
 	public void tiff(double param) { 
-		
-		if (param == 1) { // int representation of checkbox state
-			// Save processing steps AND file		
-		
-			// TO IMPLEMENT - save processing steps as some sort of text file... use existing fiji tools as possible
+		if (imp == null) {
+			IJ.error("Error", "No active image to save.");
+			return;
+		}
 
-			IJ.doCommand("Tiff...");
+		FileInfo fi = imp.getOriginalFileInfo();
 
+		// Handle case where file info is null or incomplete (common with CZI files)
+		String directory = null;
+		String originalName = "Image";
+		
+
+		// Show a Save As dialog
+		FileDialog fd = new FileDialog(IJ.getInstance(), "Save As TIFF", FileDialog.SAVE);
+		
+		
+
+		// Get the last saved directory from ImageJ
+		String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+		String savePath = OpenDialog.getLastDirectory() + imp.getTitle() + "_" + timestamp +".tif";
+		System.out.println("✅ Image saved to: " + savePath);
+		//fileSaver.saveAsTiff(imp, savePath);
+		//IJ.saveAsTiff(imp, savePath);
+		//boolean success = fileSaver.saveAsTiff(savePath);
+		String title = imp.getTitle();
+		int dotIndex = title.lastIndexOf(".");
+		if (dotIndex > 0) {
+			title = title.substring(0, dotIndex); // remove extension
+		}
+		fd.setFile(title + "_" + timestamp +".tif");
+		fd.setVisible(true);
+
+		directory = fd.getDirectory();
+		String filename = fd.getFile();
+		// ❌ If user clicked Cancel, both filename or directory could be null
+		if (filename == null || directory == null) {
+			//IJ.log("❌ Save canceled by user.");
+			return; // Cancelled – exit the method immediately
+		}
+		
+		FileSaver fileSaver = new FileSaver(imp);
+		boolean success = fileSaver.saveAsTiff(savePath);
+		if (success) {
+			System.out.println("✅ Image saved to: " + savePath);
 		} else {
-			// save file only
-			IJ.doCommand("Tiff...");
-		
-		}	
-				
+			System.err.println("❌ Error saving TIFF image.");
+			return;
+		}
+		// If param == 1, also save the recorded actions as a .txt file
+		if (param == 1) {
+			JTextArea displayArea = ClickRecorder.getDisplayArea();
+			if (displayArea == null || displayArea.getText().trim().isEmpty()) {
+				displayArea.append("\n⚠ No recorded actions to export.\n");
+				return;
+			}
+	
+			// Modify the file path to save as .txt instead of .tif
+			String txtFilePath = savePath.replace(".tif", ".txt");
+	
+			try (FileWriter writer = new FileWriter(txtFilePath)) {
+				writer.write(displayArea.getText()); // Save recorded actions
+				System.out.println("✅ Actions exported to: " + txtFilePath);
+			} catch (IOException e) {
+				System.err.println("❌ Error saving .txt file.");
+				e.printStackTrace();
+			}
+		}
+
 	}
 	
 	public void jpeg(double param) { 

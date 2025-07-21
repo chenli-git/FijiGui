@@ -13,7 +13,7 @@
 	</parent>
 
 	<groupId>org.stjude.lightmicroscopy</groupId>        <!-- FIXME: Your organization groupId here -->
-	<artifactId>swingui_2</artifactId> <!-- FIXME: Your project artifactId here   -->
+	<artifactId>EasyFiji_2</artifactId> <!-- FIXME: Your project artifactId here   -->
 	<version>0.2.0</version>
 
 	<repositories>
@@ -129,7 +129,7 @@
 		<dependency>
     		<groupId>sc.fiji</groupId>
     		<artifactId>CorrectBleach_</artifactId>
-    		<version>2.0.3</version>
+    		<version>2.1.0</version>
 		</dependency>
 
 		<dependency>
@@ -171,6 +171,26 @@
     		<version>2.0.2</version>
 		</dependency>
 
+		<dependency>
+			<groupId>sc.fiji</groupId>
+			<artifactId>KymographBuilder</artifactId>
+			<version>3.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>ome</groupId>
+			<artifactId>bioformats_package</artifactId>
+			<version>6.11.0</version>
+			<type>pom</type>
+		</dependency>
+
+		<dependency>
+			<groupId>ome</groupId>
+			<artifactId>formats-api</artifactId>
+			<version>8.1.1</version>
+		</dependency>
+
+
 
 	</dependencies>
 
@@ -178,3 +198,4 @@
 
 </project>
 <!-- /Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home/jre/lib/security/cacerts -->
+

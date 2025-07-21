@@ -1,0 +1,24 @@
+{
+    "czi": {
+      "channel_count": "SizeC",
+      "voxel_size": {
+        "x": "Experiment|AcquisitionBlock|AcquisitionModeSetup|ScalingX #1",
+        "y": "Experiment|AcquisitionBlock|AcquisitionModeSetup|ScalingY #1",
+        "z": "Experiment|AcquisitionBlock|AcquisitionModeSetup|ScalingZ #1"
+      },
+      "channel_template": {
+        "laser_power": "Experiment|AcquisitionBlock|Laser|LaserPower #%d",
+        "excitation": "Experiment|AcquisitionBlock|MultiTrackSetup|TrackSetup|Attenuator|Wavelength #%d",
+        "detection_start": "Experiment|AcquisitionBlock|MultiTrackSetup|TrackSetup|Detector|DetectorWavelengthRange|WavelengthStart #%d",
+        "detection_end": "Experiment|AcquisitionBlock|MultiTrackSetup|TrackSetup|Detector|DetectorWavelengthRange|WavelengthEnd #%d"
+      },
+      "global": {
+        "objective": "Experiment|AcquisitionBlock|AcquisitionModeSetup|Objective #1",
+        "dwell_time": "Experiment|AcquisitionBlock|AcquisitionModeSetup|PixelPeriod #1",
+        "scan_mode": "Experiment|AcquisitionBlock|AcquisitionModeSetup|TrackMultiplexType #1"
+      }
+    }
+
+    
+
+  }

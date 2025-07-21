@@ -15,7 +15,8 @@ public class CbButtonListener implements ActionListener {
     public CbButtonListener(JCheckBox checkBox) {
 		this.checkBox = checkBox; 
 		boolean cbstate = checkBox.isSelected(); // tells state of checkbox
-		param = (cbstate == true) ? 1 : 0; // converts boolean to 1 if checked or 0 if unchecked
+		this.param = (cbstate == true) ? 1 : 0; // converts boolean to 1 if checked or 0 if unchecked
+		System.out.println(this.param);
     }
 
     @Override
@@ -24,11 +25,13 @@ public class CbButtonListener implements ActionListener {
 		// Gets button ID
 		JButton button = (JButton) actionEvent.getSource();
 		String id = (String) button.getClientProperty("ID"); 
-
+		button.setBackground(new java.awt.Color(255, 255, 255));
+		param = checkBox.isSelected() ? 1 : 0;
 		// Calls a response based on button ID
 		switch (id) {
 			case "stif": 
 				sb = new SaveButtons();
+				System.out.println(this.param);
 				sb.tiff(param); 
 				break;
 				

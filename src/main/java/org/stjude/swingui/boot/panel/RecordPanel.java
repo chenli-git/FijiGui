@@ -21,45 +21,63 @@ public class RecordPanel extends BasePanel {
         //set background color
         this.setBackground(Color.lightGray);
 
+
+		JLabel Label = addFirstLabel(this, new Rectangle(10, 5, 200, 20), "Saving Methods:", 14);
+        this.add(Label);
         //--- SAVE Column -----
-
-        JLabel filesLabel = addFirstLabel(this, new Rectangle(10, 5, 120, 20), "Save Data:", 14);
 		// TIF Option
-		addLabel(this, "Save Steps?", "Logs all steps applied to image", new Rectangle(10, 30, 80, 20), 12);
-		JCheckBox checkBox = addCheckBox(this, "", 80, 30);
+        //JLabel filesLabel = addFirstLabel(this, new Rectangle(55, 30, 120, 20), "as raw data (tif)", 14);
+        //this.add(filesLabel);
+		addLabel(this, "Save Steps?", "Logs all steps applied to image and export as txt file", new Rectangle(15, 50, 80, 20), 12);
+		JCheckBox checkBox = addCheckBox(this, "", 100, 50);
+		addCbButton(this, checkBox, "Save as raw data (tif)", "Preserves channels and pixel values as acquired", "stif", new Rectangle(10, 30, 170, 20), 12);
+		
+		// JPG Option
+		//JLabel secondLabel = addFirstLabel(this, new Rectangle(55, 80, 180, 20), "for presenatation (jpeg)", 14);
+        //this.add(secondLabel);
+		JTextField jpgTextField = addTextField(this, "80", "50-80 recommended", new Rectangle(200, 100, 50, 20), 12);
+		jpgTextField.setBackground(Color.LIGHT_GRAY);
+		addTfButton(this, jpgTextField, "Save for presentation (jpeg)", "No channels, pixel values of view are approximate", "sjpg", new Rectangle(10, 80, 170, 20), 12);
+		addLabel(this, "Quality Level:", "JPG compression level", new Rectangle(15, 100, 100, 16), 12);
+		addSlider(this, jpgTextField, 100, 80, 1, sliderwidth, 100, 100); // sliders 100 wide
 
-		addCbButton(this, checkBox, "SaveAs TIF", "Preserves exact pixel values", "stif", new Rectangle(10, 50, 80, 20), 12);
-
-        // JPG Option
-		addLabel(this, "Save View:", "", new Rectangle(10, 80, 100, 20), 14);
-
-		addLabel(this, "Quality Level:", "JPG compression level", new Rectangle(10, 100, 100, 16), 12);
-		JTextField jpgTextField = addTextField(this, "80", "50-80 recommended", new Rectangle(110, 116, 30, 20), 12);
-		addSlider(this, jpgTextField, 100, 80, 1, sliderwidth, 10, 116); // sliders 100 wide
-
-		addTfButton(this, jpgTextField, "SaveAs JPG", "Estimates pixel values", "sjpg", new Rectangle(10, 140, 80, 20), 12);
+        // PNG Option
+		//JLabel thirdLabel = addFirstLabel(this, new Rectangle(55, 130, 120, 20), "for figure (png)", 14);
+        //this.add(thirdLabel);
+		addButton(this, "Save for figure (png)", "No channels, pixel values of view are exact", "snap", new Rectangle(10, 130, 170, 20), 12);
 		
 		// Movie Option
-		addLabel(this, "Save Movie:", "Data must be a stack or sequence", new Rectangle(10, 170, 100, 20), 14);
-		
-		addLabel(this, "Quality Level:", "AVI compression level", new Rectangle(10, 190, 100, 16), 12);
-		JTextField aviTextField = addTextField(this, "60", "50-80 recommended", new Rectangle(110, 206, 30, 20), 12);
-		addSlider(this, aviTextField, 100, 60, 1, sliderwidth, 10, 206);
-		
-		addLabel(this, "Frames per second:", "Movie playback frame rate", new Rectangle(10, 230, 120, 16), 12);
-		JTextField fpsTextField = addTextField(this, "4", "4-10 recommended", new Rectangle(110, 246, 30, 20), 12);
-		addSlider(this, fpsTextField, 20, 4, 1, sliderwidth, 10, 246); 
-		
-		addTwoTfButton(this, aviTextField, fpsTextField, "SaveAs AVI", "Media Player compatible", "smovie", new Rectangle(10, 270, 80, 20), 12);
-		
-		// ---- LOAD Column ------
-        addLabel(this, "Load:", "", new Rectangle(210, 5, 50, 20), 14);
+		//JLabel FourLabel = addFirstLabel(this, new Rectangle(55, 180, 120, 20), "as movie (avi)", 14);
+        //this.add(FourLabel);
 
-        addButton(this, "Apply Steps", "Applies logged steps to active image", "appsteps", new Rectangle(210, 30, 80, 20), 12);
+		// AVI Option
+		addButton(this, "Save as movie (avi)", "Save as .avi movie. Note: some systems may have trouble opening .avi format files. Please install VLC for playback.", "saveMovie", new Rectangle(10, 180, 170, 20), 12);
 
-		addButton(this, "Batch Steps", "Applies logged steps to a folder of images", "batchsteps", new Rectangle(210, 55, 80, 20), 12);
+		// addLabel(this, "Quality Level:", "AVI compression level", new Rectangle(10, 200, 100, 16), 12);
+		// JTextField aviTextField = addTextField(this, "60", "50-80 recommended", new Rectangle(110, 220, 50, 20), 12);
+		// aviTextField.setBackground(Color.LIGHT_GRAY);
+		// addSlider(this, aviTextField, 100, 60, 1, sliderwidth, 10, 220);
 
-        // added files label to the panel
-        this.add(filesLabel);
+		// addLabel(this, "Frames per second:", "Movie playback frame rate", new Rectangle(160, 200, 120, 16), 12);
+		// JTextField fpsTextField = addTextField(this, "4", "4-10 recommended", new Rectangle(260, 220, 50, 20), 12);
+		// fpsTextField.setBackground(Color.LIGHT_GRAY);
+		// addSlider(this, fpsTextField, 20, 4, 1, sliderwidth, 160, 220); 
+		// addTwoTfButton(this, aviTextField, fpsTextField, "Save as movie (avi)", "Media Player compatible", "smovie", new Rectangle(10, 180, 170, 20), 12);
+
+		//addLabel(this, "Save Movie:", "Data must be a stack or sequence", new Rectangle(10, 130, 100, 20), 14);
+		
+		
+		
+		
+		
+		
+		// // ---- LOAD Column ------
+        // addLabel(this, "Load:", "", new Rectangle(210, 5, 50, 20), 14);
+
+        // addButton(this, "Apply Steps", "Applies logged steps to active image", "appsteps", new Rectangle(210, 30, 80, 20), 12);
+
+		// addButton(this, "Batch Steps", "Applies logged steps to a folder of images", "batchsteps", new Rectangle(210, 55, 80, 20), 12);
+
+        
     }
 }
