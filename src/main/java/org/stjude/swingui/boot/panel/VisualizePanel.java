@@ -101,8 +101,6 @@ public class VisualizePanel extends BasePanel {
 		//autoB.putClientProperty("ID", "auto"); // unused
 
 
-
-
 	
         // Creates the Reset button
 		Rectangle resetbRect = new Rectangle(55, 165, 45, 20);
@@ -478,7 +476,7 @@ public class VisualizePanel extends BasePanel {
 		addButton(this, "ToClip", "Copy display to clipboard", "copy", new Rectangle(185, 290, 45, 20), 12);
 
 
-
+		addLabel(this, "VERSION: 1.0.0", "version number", new Rectangle(235, 330, 80, 20), 10);
 
 
 		

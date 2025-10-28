@@ -6,7 +6,7 @@ import org.checkerframework.checker.units.qual.h;
 
 import ij.*;
 import ij.process.*;
-import javafx.scene.control.Dialog;
+//import javafx.scene.control.Dialog;
 //import javassist.bytecode.analysis.Frame;
 import ij.gui.*;
 import ij.plugin.*; 
@@ -307,9 +307,26 @@ public class ModifySliders_ implements PlugIn {
 
 	public double[] applyLutsToCh(double param) {
 		ImageProcessor ip = imp.getProcessor();
+		//imp = WindowManager.getCurrentImage(); // active image
 		saveState();
+		// IJ.run(imp, "Apply LUT", "");
+		// imp.resetDisplayRange();   // equivalent to ip.resetMinAndMax()
+		// imp.updateAndDraw();
+		//double[] result = apply(chimp, ip);
+		
+		//IJ.run(imp, "Enhance Contrast", "saturated=0.35");
+		//double[] result = apply(chimp, ip);
+		//return result;
 		double[] result = apply(chimp, ip);
-		IJ.run(imp, "Enhance Contrast", "saturated=0.35");
+		new Thread(() -> {
+		ImagePlus imp = WindowManager.getCurrentImage();
+			if (imp == null) return;
+			IJ.run(chimp, "Apply LUT", "");
+			IJ.run(imp, "Enhance Contrast", "saturated=0.35");
+			chimp.updateAndDraw();
+		}).start();
+
+		//return new double[]{0,245};
 		return result;
 	}
 
@@ -317,14 +334,25 @@ public class ModifySliders_ implements PlugIn {
 		ImageProcessor ip = imp.getProcessor();
 		saveState();
 		int numChannels = imp.getNChannels();
+		int originalC = imp.getC();   // 🟢 remember which channel was active
 		double[] range = new double[2];
+		// loop through all channels
 		for (int c = 1; c <= numChannels; c++) {
-			ImagePlus chimp_ = new ImagePlus("Channel_" + c, ChannelSplitter.getChannel(imp, c));
-			range = apply(chimp_, ip);
+			imp.setC(c);                        // activate channel c
+			ImagePlus chimp = new ImagePlus("Channel_" + c, imp.getProcessor().duplicate());
+			IJ.run(chimp, "Apply LUT", "");
+			imp.setProcessor(chimp.getProcessor());
+			IJ.run(imp, "Enhance Contrast", "saturated=0.35");
+			chimp.close();
 		}
+
+		imp.setC(originalC);
+		imp.updateAndDraw();
+		this.chimp = new ImagePlus("active ch stk", ChannelSplitter.getChannel(imp, originalC));
 		System.out.println(range);
-		IJ.run(imp, "Enhance Contrast", "saturated=0.35");
-		return range;
+		//IJ.run(imp, "Enhance Contrast", "saturated=0.35");
+		//return range;
+		return new double[]{0,245};
 	}
 
 	public void localcorr(String mode) {
@@ -480,70 +508,76 @@ public class ModifySliders_ implements PlugIn {
 			if (!IJ.showMessageWithCancel("Apply Lookup Table?", msg))
 				return new double[]{9999,9999};
 		}
-		String option = null;
-		int type = imp.getType();
-		boolean	RGBImage = type==ImagePlus.COLOR_RGB;
-		System.out.println("RGBImage: " + RGBImage);
-		if (RGBImage)
-			imp.unlock();
-		if (!imp.lock())
-			return new double[]{0,255};
+		// String option = null;
+		// int type = imp.getType();
+		// boolean	RGBImage = type==ImagePlus.COLOR_RGB;
+		// System.out.println("RGBImage: " + RGBImage);
+		// if (RGBImage)
+		// 	imp.unlock();
+		// if (!imp.lock())
+		// 	return new double[]{0,255};
 		
-		if (bitDepth==32) {
-			IJ.beep();
-			IJ.error("\"Apply\" does not work with 32-bit images");
-			imp.unlock();
-			return new double[]{0,255};
-		}
-		int range = 256;
-		if (bitDepth==16) {
-			range = 65536;
-			int defaultRange = imp.getDefault16bitRange();
-			System.out.println("defaultRange: " + defaultRange);
-			if (defaultRange>0)
-				range = (int)Math.pow(2,defaultRange)-1;
-		}
-		int tableSize = bitDepth==16?65536:256;
-		int[] table = new int[tableSize];
-		int min = (int)imp.getDisplayRangeMin();
-		int max = (int)imp.getDisplayRangeMax();
-		System.out.println("Min: " + min + " Max: " + max);
-		if (IJ.debugMode) IJ.log("Apply: mapping "+min+"-"+max+" to 0-"+(range-1));
-		for (int i=0; i<tableSize; i++) {
-			if (i<=min)
-				table[i] = 0;
-			else if (i>=max)
-				table[i] = range-1;
-			else
-				table[i] = (int)(((double)(i-min)/(max-min))*range);
-		}
-		ip.setRoi(imp.getRoi());
-		if (imp.getStackSize()>1 && !imp.isComposite()) {
-			ImageStack stack = imp.getStack();
-			YesNoCancelDialog d = new YesNoCancelDialog(new Frame(),
-				"Entire Stack?", "Apply LUT to all "+stack.size()+" stack slices?");
-			if (d.cancelPressed())
-				{imp.unlock(); return new double[]{9999,9999};}
-			if (d.yesPressed()) {
-				if (imp.getStack().isVirtual()) {
-					imp.unlock();
-					IJ.error("\"Apply\" does not work with virtual stacks. Use\nImage>Duplicate to convert to a normal stack.");
-					return new double[]{min,max};
-				}
-				IJ.run(imp, "Apply LUT", "stack");
-			} else {
-				IJ.run(imp, "Apply LUT", "");
-			}
-		} else {
-			ip.snapshot();
-			ip.applyTable(table);
-			ip.reset(ip.getMask());
-		}
-		//reset(imp, ip);
-		imp.changes = true;
-		imp.unlock();
-		imp.updateAndDraw();
+		// if (bitDepth==32) {
+		// 	IJ.beep();
+		// 	IJ.error("\"Apply\" does not work with 32-bit images");
+		// 	imp.unlock();
+		// 	return new double[]{0,255};
+		// }
+		// int range = 256;
+		// if (bitDepth==16) {
+		// 	range = 65536;
+		// 	int defaultRange = imp.getDefault16bitRange();
+		// 	System.out.println("defaultRange: " + defaultRange);
+		// 	if (defaultRange>0)
+		// 		range = (int)Math.pow(2,defaultRange)-1;
+		// }
+		// int tableSize = bitDepth==16?65536:256;
+		// int[] table = new int[tableSize];
+		int min = (int)chimp.getDisplayRangeMin();
+		int max = (int)chimp.getDisplayRangeMax();
 		return new double[]{min,max};
+		// System.out.println("Min: " + min + " Max: " + max);
+		// System.out.println("Table size: " + tableSize + " Min: " + min + " Max: " + max + " Range: " + range);
+		// if (IJ.debugMode) IJ.log("Apply: mapping "+min+"-"+max+" to 0-"+(range-1));
+		// for (int i=0; i<tableSize; i++) {
+		// 	if (i<=min)
+		// 		table[i] = 0;
+		// 	else if (i>=max)
+		// 		table[i] = range-1;
+		// 	else
+		// 		table[i] = (int)(((double)(i-min)/(max-min))*range);
+		// }
+		// ip.setRoi(imp.getRoi());
+		// if (imp.getStackSize()> 1 && !imp.isComposite()) {
+		// 	ImageStack stack = imp.getStack();
+		// 	YesNoCancelDialog d = new YesNoCancelDialog(new Frame(),
+		// 		"Entire Stack?", "Apply LUT to all "+stack.size()+" stack slices?");
+		// 	if (d.cancelPressed())
+		// 		{imp.unlock(); return new double[]{9999,9999};}
+		// 	if (d.yesPressed()) { 
+		// 		if (imp.getStack().isVirtual()) {
+		// 			imp.unlock();
+		// 			IJ.error("\"Apply\" does not work with virtual stacks. Use\nImage>Duplicate to convert to a normal stack.");
+		// 			return new double[]{min,max};
+		// 		}
+		// 		IJ.run(imp, "Apply LUT", "stack");
+		// 		System.out.println("Applied to entire stack.");
+
+		// 	} else {
+		// 		IJ.run(imp, "Apply LUT", "");
+		// 		System.out.println("Applied to current slice.");
+		// 	}
+		// } else {
+		// 	ip.snapshot();
+		// 	ip.applyTable(table);
+		// 	ip.reset(ip.getMask());
+		// 	System.out.println("Applied table to current image.");
+		// }
+		// //reset(imp, ip);
+		// imp.changes = true;
+		// imp.unlock();
+		// imp.updateAndDraw();
+		// return new double[]{min,max};
 	}
 	
 	void reset(ImagePlus imp, ImageProcessor ip) {
