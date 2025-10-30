@@ -33,6 +33,8 @@ Images must be opened and selected (active window).
 Long-running process (e.g., filters, intensity correction, large image files) could run slow, any interactiion with the images and fiji commands (change channel, adjusting contrast, ...) could potentially interrupt the process causing Fiji freeze. Restart Fiji can help!
 ### Image display doesnt update after click **apply LUTs**
 Duo to Fiji internal bugs, sometimes the image won't auto updates when clicking **apply luts** under Process Tab. The image pixel value are actually modified (function works!) and switch color channel can see fix the display issue.
+### Standalone use
+Some buttons (color fusion and ) call the macro scripts (reside in resources/scripts/) to perform the functions, people can also use these scripts directly without EasyFiji. More custom scripts can be easily further added to extend the community usability.
 ### Unrecognzed command
 EasyFiji use features that that are bundled with newer version of Fiji like Kymograph and BioFormats, Please install these plugins if want to use these features. 
 ### Reporting Issues & Getting Support
