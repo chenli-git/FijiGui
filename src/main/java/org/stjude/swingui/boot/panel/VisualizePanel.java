@@ -476,7 +476,7 @@ public class VisualizePanel extends BasePanel {
 		addButton(this, "ToClip", "Copy display to clipboard", "copy", new Rectangle(185, 290, 45, 20), 12);
 
 
-		addLabel(this, "VERSION: 1.1.0", "version number", new Rectangle(10, 320, 120, 20), 10);
+		addLabel(this, "VERSION: 1.1.1", "version number", new Rectangle(10, 320, 120, 20), 10);
 
 
 		
