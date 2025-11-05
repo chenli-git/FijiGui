@@ -95,14 +95,14 @@ public class ProcessPanel extends BasePanel {
         // This slider value will have to be further normalized to get doubles over range 0-1...
 		//addSlider(this, multiplyTextField, 100, 10, 10, sliderwidth, 70, 185);
         //addTfButton(this, multiplyTextField, "OK", "Alters data", "multiply", new Rectangle(245, 185, 30, 20), 12);
-        addTfButton(this, null, "ToCh", "Apply Luts to the active channel", "applyLutsToCh", new Rectangle(235, 185, 40, 20), 12);
-        addTfButton(this, null, "ToAll", "Apply Luts to all channels", "applyLutsToAll", new Rectangle(275, 185, 40, 20), 12);
+        addTfButton(this, null, "ToCh", "Apply Luts to the active channel", "applyLutsToCh", new Rectangle(215, 185, 50, 20), 12);
+        addTfButton(this, null, "ToAll", "Apply Luts to all channels", "applyLutsToAll", new Rectangle(265, 185, 50, 20), 12);
         //addTfButton(this, null, "OK", "Apply LUTs", "multiply", new Rectangle(250, 185, 25, 20), 12);
 
         // bleach correction
         addLabel(this, "Intensity Correction", "Bleach or scatter correction across z-slices", new Rectangle(10, 210, 150, 20), 12);
-        addTfButton(this, null, "Global", "Systematic slice intensity adjustment", "global corr", new Rectangle(165, 210, 50, 20), 12);
-        addTfButton(this, null, "Local", "Local slice intensity adjustment", "local corr", new Rectangle(215, 210, 40, 20), 12);
+        addTfButton(this, null, "Global", "Systematic slice intensity adjustment", "global corr", new Rectangle(150, 210, 55, 20), 12);
+        addTfButton(this, null, "Local", "Local slice intensity adjustment", "local corr", new Rectangle(205, 210, 50, 20), 12);
         addTfButton(this, null, "Equalize", "Makes slice intensities equal", "equalize corr", new Rectangle(255, 210, 60, 20), 12);
 
         
@@ -118,15 +118,15 @@ public class ProcessPanel extends BasePanel {
 
 		// ---- Modify Dimensions Label ------- 
         addLabel(this, "Modify Dimensions:", "", new Rectangle(10, 240, 170, 20), 14);
-        addButton(this, "Rotate", "Uses bilinear interpolation", "rotate", new Rectangle(175, 240, 50, 20), 12);
-        addButton(this, "Crop", "Use Subset to crop in Z", "crop", new Rectangle(225, 240, 40, 20), 12);
-        addButton(this, "Subset", "Reshape non-XY dimensions (ch,z,t)", "subset", new Rectangle(265, 240, 50, 20), 12);
+        addButton(this, "Rotate", "Uses bilinear interpolation", "rotate", new Rectangle(165, 240, 55, 20), 12);
+        addButton(this, "Crop", "Use Subset to crop in Z", "crop", new Rectangle(220, 240, 40, 20), 12);
+        addButton(this, "Subset", "Reshape non-XY dimensions (ch,z,t)", "subset", new Rectangle(260, 240, 55, 20), 12);
         //addButton(this, "ChOrder", "Change channel order", "reorder", new Rectangle(260, 240, 55, 20), 12);
         // ---- record action listeners ----
         addLabel(this, "Record Actions:", "", new Rectangle(10, 265, 140, 20), 14);
         //addButton(this, "REC", "Save recorded clicks", "save", new Rectangle(10, 330, 40, 20), 12);
         addButton(this, "CLR", "Clear recorded history", "clear", new Rectangle(280, 305, 35, 20), 12);
-        addButton(this, "SAVE", "Export the action list", "export", new Rectangle(275, 325, 40, 20), 12);
+        addButton(this, "SAVE", "Export the action list", "export", new Rectangle(270, 325, 45, 20), 12);
         //addButton(this,"RUN", "Run recorded actions", "run", new Rectangle(130, 330, 45, 20), 12);
 
         recToggleButton = new JToggleButton("REC");

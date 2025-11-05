@@ -23,7 +23,7 @@ public class ToolbarTab extends WindowAdapter {
 	ProcessPanel processPanel; // Store reference to ProcessPanel
 
     public ToolbarTab() {
-        frameWidth = 350;
+        frameWidth = 370;
         frameHeight = 420;
 		setup();
     }

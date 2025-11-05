@@ -38,7 +38,7 @@ public class RecordPanel extends BasePanel {
 		JTextField jpgTextField = addTextField(this, "80", "50-80 recommended", new Rectangle(180, 95, 40, 20), 12);
 		jpgTextField.setBackground(Color.LIGHT_GRAY);
 		addTfButton(this, jpgTextField, "Save for presentation (jpeg)", "No channels, pixel values of view are approximate", "sjpg", new Rectangle(10, 70, 170, 20), 12);
-		addLabel(this, "Quality Level:", "JPG compression level", new Rectangle(15, 95, 100, 16), 12);
+		addLabel(this, "Quality Level", "JPG compression level", new Rectangle(15, 95, 100, 16), 11);
 		addSlider(this, jpgTextField, 100, 80, 1, sliderwidth, 100, 95); // sliders 100 wide
 
         // PNG Option
