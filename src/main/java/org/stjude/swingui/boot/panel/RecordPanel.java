@@ -67,10 +67,6 @@ public class RecordPanel extends BasePanel {
 		//addLabel(this, "Save Movie:", "Data must be a stack or sequence", new Rectangle(10, 130, 100, 20), 14);
 		
 		
-		
-		
-		
-		
 		// // ---- LOAD Column ------
         // addLabel(this, "Load:", "", new Rectangle(210, 5, 50, 20), 14);
 
