@@ -31,7 +31,7 @@ public class ProcessPanel extends BasePanel {
         JLabel featuresLabel = addFirstLabel(this, new Rectangle(10, 5, 220, 20), "Modify Channel Features:", 14);
         //added elements to panel
         this.add(featuresLabel);
-        addLabel(this, "Undo", "", new Rectangle(250, 5, 50, 20), 12);
+        addLabel(this, "UndoLast", "", new Rectangle(230, 5, 80, 20), 12);
         // add a revert button to unprocess image
         //addButton(this, "Revert", "reset to original setting", "revert", new Rectangle(200, 5, 55, 20), 12);
 
