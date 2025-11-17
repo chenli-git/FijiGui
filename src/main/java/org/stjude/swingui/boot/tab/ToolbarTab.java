@@ -24,7 +24,7 @@ public class ToolbarTab extends WindowAdapter {
 
     public ToolbarTab() {
         frameWidth = 370;
-        frameHeight = 420;
+        frameHeight = 450;
 		setup();
     }
 

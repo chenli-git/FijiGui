@@ -1,10 +1,8 @@
 package org.stjude.swingui.boot.event;
 
 import javax.swing.JFileChooser;
-import javax.swing.JTextArea;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileWriter;
@@ -17,7 +15,6 @@ import org.stjude.swingui.boot.proc.ModifySliders;
 
 import ij.IJ;
 import ij.ImagePlus;
-import ij.ImageStack;
 import ij.WindowManager;
 import ij.process.ImageProcessor;
 import ij.process.LUT;
@@ -31,7 +28,7 @@ public class ClickRecorder implements ActionListener {
     private static ClickRecorder instance = new ClickRecorder(); // shared instance
     private static List<JSONObject> recordedClicks = new ArrayList<>();
     private static List<JSONObject> savedActions = new ArrayList<>(); // Store recent actions
-    private static JTextArea displayArea; // **JTextArea for real-time display**
+    private static RecorderTableModel tableModel; // **Table model for JTable display**
     private static ModifySliders ms = null; 
     
     private ClickRecorder() {}
@@ -40,9 +37,16 @@ public class ClickRecorder implements ActionListener {
         return instance;
     }
 
-    // **Set the JTextArea globally**
-    public static void setTextArea(JTextArea textArea) {
-        displayArea = textArea;
+    // **Set the table model globally**
+    public static void setTableModel(RecorderTableModel model) {
+        tableModel = model;
+    }
+
+    // **Remove last record from table (for undo functionality)**
+    public static void removeLastRecord() {
+        if (tableModel != null) {
+            javax.swing.SwingUtilities.invokeLater(() -> tableModel.removeLastRecord());
+        }
     }
 
     @Override
@@ -74,33 +78,11 @@ public class ClickRecorder implements ActionListener {
         recordedClicks.add(action);
         System.out.println("📌 Recorded: " + action.toString());
 
-        // Format the recorded action for display
-        // Format the action as a string for display
-        // Format the recorded action for display
-        String paramDisplay;
-        if (parameters == null || parameters.length == 0) {
-            paramDisplay = "None";
-        } else {
-            StringBuilder paramStr = new StringBuilder();
-            for (int i = 0; i < parameters.length; i++) {
-                if (i > 0) paramStr.append(", ");
-                paramStr.append(String.format("%.2f", parameters[i]));
-            }
-            paramDisplay = paramStr.toString();
+        // **Update table model**
+        if (tableModel != null) {
+            ActionRecord record = new ActionRecord(command, parameters, channel);
+            javax.swing.SwingUtilities.invokeLater(() -> tableModel.addRecord(record));
         }
-        String channelLabel = (channel == -1) ? "All" : String.valueOf(channel);
-        // if (channel == -1) {
-        //     paramDisplay = "N/A";
-        // }
-        String formattedAction = String.format(
-            "Ch: %-4s | %-6s | %-4s",
-            channelLabel,
-            command, 
-            paramDisplay
-        );
-
-        // Update display area
-        updateDisplay(formattedAction);
 
     }
 
@@ -109,7 +91,7 @@ public class ClickRecorder implements ActionListener {
     public void saveRecentActions() {
         int size = recordedClicks.size();
         if (size == 0) {
-            displayArea.append("\n⚠ No recent action to save.\n");
+            System.out.println("⚠ No recent action to save.");
             return;
         }
         
@@ -168,30 +150,23 @@ public class ClickRecorder implements ActionListener {
 
         savedActions.add(lastAction); // Add to saved actions
 
-        String formattedAction = String.format(
-        "Ch: %-2s | %-5s | %-3s",
-        lastAction.opt("channel") != null ? "Channel " + lastAction.opt("channel") : "NA",  // Channel value
-        lastAction.optString("button", "NA"),              // Action name
-        lastAction.opt("params") != null ? lastAction.opt("params").toString() : "NA"  // Parameter value
-        
-
-        );
-        displayArea.append(formattedAction + "\n");
-        //System.out.println("✅ Last action saved: " + lastAction.toString());
+        System.out.println("✅ Last action saved: " + lastAction.toString());
     }
 
     // **Clear recorded actions**
     public void clearRecords() {
         recordedClicks.clear();
         savedActions.clear(); // Clear saved actions
-        displayArea.setText(""); // **Clear JTextArea**
+        if (tableModel != null) {
+            javax.swing.SwingUtilities.invokeLater(() -> tableModel.clear());
+        }
         System.out.println("🗑 Click history cleared.");
     }
 
     // **Export actions to a JSON file**
     public void exportToJson() {
         if (savedActions.isEmpty()) {
-            displayArea.append("\n⚠ No saved actions to export.\n");
+            System.out.println("⚠ No saved actions to export.");
             return;
         }
 
@@ -227,9 +202,10 @@ public class ClickRecorder implements ActionListener {
     
     }
 
-    public void exportToTxt() {
-        if (displayArea == null || displayArea.getText().trim().isEmpty()) {
-            displayArea.append("\n No recorded actions to export.\n");
+    // **NEW: Export table to CSV file**
+    public void exportTableToCsv() {
+        if (tableModel == null || tableModel.getRowCount() == 0) {
+            IJ.showMessage("No recorded actions to export.");
             return;
         }
     
@@ -239,12 +215,12 @@ public class ClickRecorder implements ActionListener {
     
         // Generate timestamped filename
         String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String defaultFileName = imageName + "_" + timestamp + ".txt";
+        String defaultFileName = imageName + "_actions_" + timestamp + ".csv";
     
         // Setup file chooser
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Save Recorded Actions as Text");
-        fileChooser.setFileFilter(new FileNameExtensionFilter("Text Files (*.txt)", "txt"));
+        fileChooser.setDialogTitle("Save Action Table as CSV");
+        fileChooser.setFileFilter(new FileNameExtensionFilter("CSV Files (*.csv)", "csv"));
         fileChooser.setSelectedFile(new File(defaultFileName));
     
         int userSelection = fileChooser.showSaveDialog(null);
@@ -252,19 +228,59 @@ public class ClickRecorder implements ActionListener {
         if (userSelection == JFileChooser.APPROVE_OPTION) {
             File fileToSave = fileChooser.getSelectedFile();
             String filePath = fileToSave.getAbsolutePath();
-            if (!filePath.toLowerCase().endsWith(".txt")) {
-                filePath += ".txt";
+            if (!filePath.toLowerCase().endsWith(".csv")) {
+                filePath += ".csv";
             }
     
             try (FileWriter writer = new FileWriter(filePath)) {
-                writer.write(displayArea.getText()); // Save displayArea content
-                System.out.println("✅ Actions exported to: " + filePath);
+                // Write header
+                writer.write("Channel,Action,Parameters\n");
+                
+                // Write data rows
+                java.util.List<ActionRecord> records = tableModel.getRecords();
+                for (ActionRecord record : records) {
+                    writer.write(String.format("%s,%s,\"%s\"\n",
+                        record.getChannelLabel(),
+                        record.getActionId(),
+                        record.getParamsAsString()));
+                }
+                
+                System.out.println("✅ Table exported to: " + filePath);
+                IJ.showMessage("Success", "Table exported to:\n" + filePath);
             } catch (IOException e) {
                 System.err.println("❌ Error saving file.");
+                IJ.error("Export Error", "Failed to save file: " + e.getMessage());
                 e.printStackTrace();
             }
         } else {
             System.out.println("⚠ Export canceled.");
+        }
+    }
+
+    // **NEW: Export table to CSV file with specified path (used by SaveButtons)**
+    public void exportTableToCsvWithPath(String filePath) {
+        if (tableModel == null || tableModel.getRowCount() == 0) {
+            System.out.println("⚠ No recorded actions to export.");
+            return;
+        }
+    
+        try (FileWriter writer = new FileWriter(filePath)) {
+            // Write header
+            writer.write("Channel,Action,Parameters\n");
+            
+            // Write data rows
+            java.util.List<ActionRecord> records = tableModel.getRecords();
+            for (ActionRecord record : records) {
+                writer.write(String.format("%s,%s,\"%s\"\n",
+                    record.getChannelLabel(),
+                    record.getActionId(),
+                    record.getParamsAsString()));
+            }
+            
+            System.out.println("✅ Table exported to: " + filePath);
+        } catch (IOException e) {
+            System.err.println("❌ Error saving file: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -453,17 +469,6 @@ public class ClickRecorder implements ActionListener {
             e.printStackTrace();
         }
 
-    }
-
-    
-    private void updateDisplay(String message) {
-        if (displayArea != null) {
-            displayArea.append(message + "\n");
-        }
-    }
-
-    public static JTextArea getDisplayArea() {
-        return displayArea;
     }
 
 }

@@ -230,9 +230,14 @@ public class TfButtonListener implements ActionListener {
 					// If the check fails, an error message is already shown in isSliceOrFrame()
 					break;
 				}
-				ms.equalizecorr(getbleachMode());
-				if (processPanel != null && processPanel.isRecording()) {
-					recorder.recordAction(id, new double[0], ms.getActiveChannel());
+				try {
+					ms.equalizecorr(getbleachMode());
+					if (processPanel != null && processPanel.isRecording()) {
+						recorder.recordAction(id, new double[0], ms.getActiveChannel());
+					}
+				} catch (Exception e) {
+					IJ.error("Equalize Correction Error", "An error occurred: " + e.getMessage());
+					e.printStackTrace();
 				}
 				break;
 

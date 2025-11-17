@@ -134,6 +134,12 @@ public class ModifySliders_ implements PlugIn {
 	}
 	
 	public void rotate() { 
+		// Save state for undo
+		ModifySliders ms = ModifySliders.getInstance();
+		if (ms != null) {
+			ms.saveImageState();
+		}
+		
 		// Applies to all channels
 		// IJ.doCommand("Rotate...") does not work b/c there are two menu commands called 'Rotate...'!
 		// FIX: Would be nice to eventually drive this with a FIJI GUI slider, but a good preview is essential here	
@@ -142,8 +148,14 @@ public class ModifySliders_ implements PlugIn {
 
 	}
 
-	public void crop() { 
+	public boolean crop() { 
 		// Applies to all channels
+		ImagePlus imp = WindowManager.getCurrentImage();
+		if (imp == null || imp.getRoi() == null) {
+			IJ.error("No ROI", "Please draw a rectangle selection before cropping.");
+			return false;
+		}
+		
 		IJ.setTool(Toolbar.RECTANGLE); // Preselects polyline tool	
 		
 		// Build GUI.  Ideally this would be written as its own class.
@@ -183,6 +195,7 @@ public class ModifySliders_ implements PlugIn {
 		jd.setVisible(true); 
 
 		// Processing begins in response to button press and resides within ActionListener method below....
+		return true;
 	}	
 	
 	public void subset() { 

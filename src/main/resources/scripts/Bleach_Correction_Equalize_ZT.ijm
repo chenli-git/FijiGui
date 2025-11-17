@@ -123,18 +123,17 @@ for (i = 0; i < scalings.length; i++) {
 	close("mask");
 	close("slice");
 	
-	Plot.create("Equalize method Intensity vs Frame", "Frame", "Median Signal ROI Intensity");
-	Plot.setLineWidth(3);
-	Plot.setColor("black");
-	Plot.add("line", planes, means);
-	Plot.setColor("red");
-	Plot.add("line", planes, correctedMeans);
-	Plot.setLegend("pre-correction\tpost-correction...", "bottom-left");
-	Plot.show();
-	
-} else {
-	showMessage("Bleach Correction", "Bleach correction is not possible due to insufficient data points.\nOnly " + positions.length + " usable slices detected.");
-}
+} // end for loop
+
+// Create plot after loop completes
+Plot.create("Equalize method Intensity vs Frame", "Frame", "Median Signal ROI Intensity");
+Plot.setLineWidth(3);
+Plot.setColor("black");
+Plot.add("line", planes, means);
+Plot.setColor("red");
+Plot.add("line", planes, correctedMeans);
+Plot.setLegend("pre-correction\tpost-correction...", "bottom-left");
+Plot.show();
 
 
 

@@ -1,9 +1,11 @@
 package org.stjude.swingui.boot.panel;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 
-import org.checkerframework.checker.units.qual.t;
+import org.stjude.swingui.boot.event.ButtonListener;
 import org.stjude.swingui.boot.event.ClickRecorder;
+import org.stjude.swingui.boot.event.RecorderTableModel;
 
 import java.awt.*;
 
@@ -19,6 +21,8 @@ public class ProcessPanel extends BasePanel {
     //constructor
     public ProcessPanel() {
         init();
+        // Register this panel with ButtonListener so it can check recording state
+        ButtonListener.setProcessPanel(this);
     }
 
     //method to initialize the panel
@@ -31,7 +35,7 @@ public class ProcessPanel extends BasePanel {
         JLabel featuresLabel = addFirstLabel(this, new Rectangle(10, 5, 220, 20), "Modify Channel Features:", 14);
         //added elements to panel
         this.add(featuresLabel);
-        addLabel(this, "UndoLast", "", new Rectangle(230, 5, 80, 20), 12);
+        addLabel(this, "UndoLast", "", new Rectangle(220, 5, 80, 20), 12);
         // add a revert button to unprocess image
         //addButton(this, "Revert", "reset to original setting", "revert", new Rectangle(200, 5, 55, 20), 12);
 
@@ -123,14 +127,10 @@ public class ProcessPanel extends BasePanel {
         addButton(this, "Subset", "Reshape non-XY dimensions (ch,z,t)", "subset", new Rectangle(260, 240, 55, 20), 12);
         //addButton(this, "ChOrder", "Change channel order", "reorder", new Rectangle(260, 240, 55, 20), 12);
         // ---- record action listeners ----
-        addLabel(this, "Record Actions:", "", new Rectangle(10, 265, 140, 20), 14);
-        //addButton(this, "REC", "Save recorded clicks", "save", new Rectangle(10, 330, 40, 20), 12);
-        addButton(this, "CLR", "Clear recorded history", "clear", new Rectangle(280, 305, 35, 20), 12);
-        //addButton(this, "SAVE", "Export the action list", "export", new Rectangle(270, 325, 45, 20), 12);
-        //addButton(this,"RUN", "Run recorded actions", "run", new Rectangle(130, 330, 45, 20), 12);
-
+        addLabel(this, "Record Actions:", "", new Rectangle(10, 265, 120, 20), 14);
+        
         recToggleButton = new JToggleButton("REC");
-        recToggleButton.setBounds(280, 285, 35, 20);
+        recToggleButton.setBounds(165, 265, 55, 20);
         recToggleButton.setFont(new Font("Calibri", Font.PLAIN, 12));
         recToggleButton.setMargin(new Insets(2, 2, 2, 2));
         recToggleButton.setBackground(Color.WHITE); // Default to stopped state
@@ -138,6 +138,10 @@ public class ProcessPanel extends BasePanel {
         recToggleButton.setBorderPainted(false);
         recToggleButton.setToolTipText("Start recording actions");
         this.add(recToggleButton);
+        
+        addButton(this, "CLR", "Clear recorded history", "clear", new Rectangle(220, 265, 40, 20), 12);
+        addButton(this, "SAVE", "Export the action table as CSV", "export", new Rectangle(260, 265, 55, 20), 12);
+        //addButton(this,"RUN", "Run recorded actions", "run", new Rectangle(275, 265, 40, 20), 12);
 
         // Add event listener to toggle color
         recToggleButton.addItemListener(e -> {
@@ -154,17 +158,40 @@ public class ProcessPanel extends BasePanel {
             }
         });
 
-        JLabel filesLabel = addFirstLabel(this, new Rectangle(180, 250, 120, 20), "Actions:", 14);
-        //this.add(filesLabel);
-        JTextArea actionHistory = addTextArea(this, "", "", new Rectangle(10, 285, 260, 60), 11);
-        actionHistory.setLineWrap(true);
-        JScrollPane scrollPane = new JScrollPane(actionHistory);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setBounds(10, 285, 260, 60);
-        this.add(scrollPane);
+        // **Add JTable for action recording**
+        RecorderTableModel tableModel = new RecorderTableModel();
+        JTable actionTable = new JTable(tableModel);
+        
+        // Customize table appearance
+        actionTable.setFont(new Font("Monospaced", Font.PLAIN, 10));
+        actionTable.setRowHeight(18);
+        actionTable.setShowGrid(true);
+        actionTable.setGridColor(Color.LIGHT_GRAY);
+        actionTable.getTableHeader().setFont(new Font("Calibri", Font.BOLD, 11));
+        
+        // Set column widths
+        actionTable.getColumnModel().getColumn(0).setPreferredWidth(40);  // Channel
+        actionTable.getColumnModel().getColumn(1).setPreferredWidth(100); // Action
+        actionTable.getColumnModel().getColumn(2).setPreferredWidth(120); // Parameters
+        
+        // Center align the channel column
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        actionTable.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
+        
+        // Create scroll pane for the table
+        JScrollPane tableScrollPane = new JScrollPane(actionTable);
+        tableScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        tableScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        tableScrollPane.setBounds(10, 290, 305, 90);
+        tableScrollPane.setBorder(BorderFactory.createTitledBorder("Action Table"));
+        this.add(tableScrollPane);
 
-        ClickRecorder.setTextArea(actionHistory);
+        // Register the table model with ClickRecorder
+        ClickRecorder.setTableModel(tableModel);
+
+
+
     }
 
     // Public method to access the toggle button state from another class

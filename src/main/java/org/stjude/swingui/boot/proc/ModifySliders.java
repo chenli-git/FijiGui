@@ -124,6 +124,11 @@ public class ModifySliders_ implements PlugIn {
         }
     }
 
+	// **Public method to save state (for use by other classes)**
+    public void saveImageState() {
+        saveState();
+    }
+
 	// **Undo Last Action**
     public void undoLastAction() {
         if (!historyStack.isEmpty() && checkImage()) {
@@ -136,6 +141,10 @@ public class ModifySliders_ implements PlugIn {
 			chimp = new ImagePlus("active ch stk", ChannelSplitter.getChannel(imp, curch));
 	
 			imp.updateAndDraw(); // ✅ Redraw image
+			
+			// Remove last record from action table
+			org.stjude.swingui.boot.event.ClickRecorder.removeLastRecord();
+			
             System.out.println("Undo performed. Remaining history: " + historyStack.size());
         } else {
             IJ.showMessage("No previous state to undo.");

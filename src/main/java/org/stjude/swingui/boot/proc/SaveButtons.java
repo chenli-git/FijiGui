@@ -54,15 +54,8 @@ public class ModifySliders_ implements PlugIn {
 		// Show a Save As dialog
 		FileDialog fd = new FileDialog(IJ.getInstance(), "Save As TIFF", FileDialog.SAVE);
 		
-		
-
 		// Get the last saved directory from ImageJ
 		String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-		String savePath = OpenDialog.getLastDirectory() + imp.getTitle() + "_" + timestamp +".tif";
-		System.out.println("✅ Image saved to: " + savePath);
-		//fileSaver.saveAsTiff(imp, savePath);
-		//IJ.saveAsTiff(imp, savePath);
-		//boolean success = fileSaver.saveAsTiff(savePath);
 		String title = imp.getTitle();
 		int dotIndex = title.lastIndexOf(".");
 		if (dotIndex > 0) {
@@ -79,6 +72,9 @@ public class ModifySliders_ implements PlugIn {
 			return; // Cancelled – exit the method immediately
 		}
 		
+		// Build the full save path from dialog results
+		String savePath = directory + filename;
+		
 		FileSaver fileSaver = new FileSaver(imp);
 		boolean success = fileSaver.saveAsTiff(savePath);
 		if (success) {
@@ -87,22 +83,19 @@ public class ModifySliders_ implements PlugIn {
 			System.err.println("❌ Error saving TIFF image.");
 			return;
 		}
-		// If param == 1, also save the recorded actions as a .txt file
+		// If param == 1, also save the recorded actions as a CSV file
 		if (param == 1) {
-			JTextArea displayArea = ClickRecorder.getDisplayArea();
-			if (displayArea == null || displayArea.getText().trim().isEmpty()) {
-				displayArea.append("\n⚠ No recorded actions to export.\n");
-				return;
-			}
-	
-			// Modify the file path to save as .txt instead of .tif
-			String txtFilePath = savePath.replace(".tif", ".txt");
-	
-			try (FileWriter writer = new FileWriter(txtFilePath)) {
-				writer.write(displayArea.getText()); // Save recorded actions
-				System.out.println("✅ Actions exported to: " + txtFilePath);
-			} catch (IOException e) {
-				System.err.println("❌ Error saving .txt file.");
+			ClickRecorder recorder = ClickRecorder.getInstance();
+			
+			// Get the table model from ClickRecorder
+			// We'll use a static method to access it
+			try {
+				// Export table to CSV file with same base name as the image
+				String csvFilePath = savePath.replace(".tif", "_actions.csv");
+				recorder.exportTableToCsvWithPath(csvFilePath);
+				System.out.println("✅ Actions table exported to: " + csvFilePath);
+			} catch (Exception e) {
+				System.err.println("❌ Error saving actions table.");
 				e.printStackTrace();
 			}
 		}

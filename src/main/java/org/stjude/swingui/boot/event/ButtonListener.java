@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 import org.stjude.swingui.boot.proc.*;
+import org.stjude.swingui.boot.panel.ProcessPanel;
 
 import ij.ImagePlus;
 import ij.WindowManager;
@@ -16,6 +17,12 @@ public class ButtonListener implements ActionListener
 {
 	private static ModifySliders ms = null; // Use shared instance
 	private static ClickRecorder recorder = ClickRecorder.getInstance();
+	private static ProcessPanel processPanel;
+
+	// Static method to set ProcessPanel externally (Inject the instance)
+	public static void setProcessPanel(ProcessPanel panel) {
+		processPanel = panel;
+	}
 
     public ButtonListener() {}
 
@@ -270,16 +277,25 @@ public class ButtonListener implements ActionListener
 				
 				mb = new ModifyButtons();
 				mb.rotate();
+				if (processPanel != null && processPanel.isRecording()) {
+					recorder.recordAction(id, new double[0], -1);
+				}
 				break;
 				
 			case "crop":
 				mb = new ModifyButtons();
-				mb.crop();
+				boolean cropSuccess = mb.crop();
+				if (cropSuccess && processPanel != null && processPanel.isRecording()) {
+					recorder.recordAction(id, new double[0], -1);
+				}
 				break;		
 				
 			case "subset":
 				mb = new ModifyButtons();
 				mb.subset();
+				if (processPanel != null && processPanel.isRecording()) {
+					recorder.recordAction(id, new double[0], -1);
+				}
 				break;
 			// buttons for imageinfo 
 			case "info":
@@ -314,8 +330,8 @@ public class ButtonListener implements ActionListener
 				break;
 
 			case "export":
-				//recorder.exportToJson();
-				recorder.exportToTxt();
+				// Export table as CSV instead of text
+				recorder.exportTableToCsv();
 				break;
 
 			case "run":
