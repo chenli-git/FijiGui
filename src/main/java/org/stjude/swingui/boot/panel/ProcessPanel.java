@@ -126,7 +126,7 @@ public class ProcessPanel extends BasePanel {
         addLabel(this, "Record Actions:", "", new Rectangle(10, 265, 140, 20), 14);
         //addButton(this, "REC", "Save recorded clicks", "save", new Rectangle(10, 330, 40, 20), 12);
         addButton(this, "CLR", "Clear recorded history", "clear", new Rectangle(280, 305, 35, 20), 12);
-        addButton(this, "SAVE", "Export the action list", "export", new Rectangle(270, 325, 45, 20), 12);
+        //addButton(this, "SAVE", "Export the action list", "export", new Rectangle(270, 325, 45, 20), 12);
         //addButton(this,"RUN", "Run recorded actions", "run", new Rectangle(130, 330, 45, 20), 12);
 
         recToggleButton = new JToggleButton("REC");

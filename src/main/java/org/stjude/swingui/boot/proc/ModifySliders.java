@@ -346,13 +346,21 @@ public class ModifySliders_ implements PlugIn {
 			chimp.close();
 		}
 
+		double[] channelRanges = new double[numChannels * 2]; // [c1min,c1max,c2min,c2max,...]
+		for (int c = 1; c <= numChannels; c++) {
+                        imp.setC(c);
+                        channelRanges[(c - 1) * 2] = imp.getDisplayRangeMin();
+                        channelRanges[(c - 1) * 2 + 1] = imp.getDisplayRangeMax();
+                    }
+		
 		imp.setC(originalC);
 		imp.updateAndDraw();
 		this.chimp = new ImagePlus("active ch stk", ChannelSplitter.getChannel(imp, originalC));
 		System.out.println(range);
 		//IJ.run(imp, "Enhance Contrast", "saturated=0.35");
 		//return range;
-		return new double[]{0,245};
+		//return new double[]{0,245};
+		return channelRanges;
 	}
 
 	public void localcorr(String mode) {

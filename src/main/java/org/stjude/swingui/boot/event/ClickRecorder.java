@@ -89,9 +89,9 @@ public class ClickRecorder implements ActionListener {
             paramDisplay = paramStr.toString();
         }
         String channelLabel = (channel == -1) ? "All" : String.valueOf(channel);
-        if (channel == -1) {
-            paramDisplay = "N/A";
-        }
+        // if (channel == -1) {
+        //     paramDisplay = "N/A";
+        // }
         String formattedAction = String.format(
             "Ch: %-4s | %-6s | %-4s",
             channelLabel,

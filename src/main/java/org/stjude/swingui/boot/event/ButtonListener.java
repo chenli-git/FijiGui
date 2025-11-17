@@ -267,6 +267,7 @@ public class ButtonListener implements ActionListener
 				
 			// logic for Intensity Correction buttons	
 			case "rotate":
+				
 				mb = new ModifyButtons();
 				mb.rotate();
 				break;
